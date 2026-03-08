@@ -1,0 +1,390 @@
+转盘盒饭机SDK说明文档
+SDK对接步骤
+（第一步：提供SDK）
+1、需要用的权限
+SDK所须权限：(提供的SDK已包含一下权限)
+ <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- 添加访问手机位置的权限 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <!-- 添加访问手机状态的权限 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 允许CWJ账户组访问底层信息 -->
+    <uses-permission android:name="android.permission.CWJ_GROUP" >
+    </uses-permission>
+
+    <!-- 允许mTweak用户访问高级系统权限 -->
+    <uses-permission android:name="android.permission.MTWEAK_USER" />
+
+    <!-- 允许声波支付权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+
+
+
+2、引入AAR包在app/build.gradle添加aar支持(提供的SDK中已有例子，步骤如下)
+2.1把这两个aar包放入libs目录下
+ 
+
+2.2在app/build.gradle添加aar支持
+ 
+
+2.2引入AAR包
+ 
+
+3、配置串口
+3.1在继承TcnVendApplication的类中进行配置
+例如：TcnShareUseData.getInstance().setBoardSerPortFirst("/dev/ttyS3");  这个串口根据自己主板接的那个串口，就配置相对应的。
+ 
+
+
+4、配通过广播启动VendService这个服务。
+启动服务后可以，通过注册和反注册，可以监听从SDK返回过来的数据。
+注册TcnVendIF.getInstance().registerListener(m_vendListener);
+反注册TcnVendIF 例如：TcnVendIF.getInstance().unregisterListener(m_vendListener)
+比如：下图
+ 
+
+5、SDK授权
+5.1通过手机扫码出现一下提示，按照要求填写授权
+ 
+
+
+SDK功能详细使用说明
+ 
+
+1、出货例子：模拟一次正常购买出货（包含货道号、金额、订单号等）
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_ship_slot
+输入货道号、点击出货
+TcnVendIF.getInstance().reqShip(slotNo,heatSeconds,shipMethod,amount,tradeNo);
+
+出货接口说明
+参数名称	参数说明
+slotNo	货道号
+heatSeconds	加热时间（s）
+shipMethod	支付方式
+amount	支付金额
+tradeNo	订单号
+
+2、测试货道:输入货道号，让该货道出货。
+ 
+
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_reqselect
+输入货道号、点击测试
+TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam),heatSeconds);//出货货道接口
+接口说明
+参数名称	参数说明
+strParam	输入货道号
+heatSeconds	加热时间（s）
+
+3、选择货道：输入货道号，模拟一个选货功能。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_spr_reqselect
+输入货道号、点击选择
+TcnVendIF.getInstance().reqSelectSlotNo(Integer.valueOf(strParam));//选货方法
+接口说明
+参数名称	参数说明
+strParam	输入货道号
+
+4、查询驱动板故障。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_query_drive_fault
+点击测试
+TcnVendIF.getInstance().reqQueryStatus(UIComBack.getInstance().getGroupHefanZpId(strParam));
+接口说明
+参数名称	参数说明
+grpId	柜组（一般只会有一个柜组）
+5、清除故障。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_clear_drive_fault
+点击测试
+TcnVendIF.getInstance().reqCleanDriveFaults(UIComBack.getInstance().getGroupHefanZpId(strParam));
+接口说明
+参数名称	参数说明
+grpId	柜组（一般只会有一个柜组）
+
+6、出货检测。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_ship_check
+点击测试
+TcnVendIF.getInstance().reqDetectShip(UIComBack.getInstance().getGroupHefanZpId(strParam));接口说明
+参数名称	参数说明
+grpId	柜组（一般只会有一个柜组）
+
+7、上升。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_up
+选择层高、点击测试
+TcnVendIF.getInstance().reqLifterUp(UIComBack.getInstance().getGroupHefanZpId(strParam),Integer.parseInt(strParamSecond));
+接口说明
+参数名称	参数说明
+grpId	柜组号
+floor	层高
+
+8、打开取货门。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_cargo_door_open
+点击测试
+TcnVendIF.getInstance().reqTakeGoodsDoorControl(UIComBack.getInstance().getGroupHefanZpId(strParam),true);
+接口说明
+参数名称	参数说明
+grpId	柜组号
+bOpen	是否打开
+
+9、关闭取货门。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_cargo_door_close
+点击测试
+TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam),heatSeconds);//出货货道接口
+接口说明
+参数名称	参数说明
+grpId	柜组号
+bOpen	是否打开
+
+10、停止微波炉。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_clapboard_close
+点击测试
+TcnVendIF.getInstance().reqClapboardSwitch(UIComBack.getInstance().getGroupHefanZpId(strParam),false);
+接口说明
+参数名称	参数说明
+grpId	柜组号
+bOpen	是否打开
+
+11、打开微波炉。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_clapboard_open
+点击测试
+TcnVendIF.getInstance().reqClapboardSwitch(UIComBack.getInstance().getGroupHefanZpId(strParam),false);
+接口说明
+参数名称	参数说明
+grpId	柜组号
+bOpen	是否打开
+12、设置光检步数。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_light_steps
+输入步数、点击设置
+TcnVendIF.getInstance().reqSetLightOutSteps(-1,Integer.valueOf(data1));
+接口说明
+参数名称	参数说明
+grpId	柜组号
+steps	步数
+
+13、查询参数。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_query_param
+输入货道号、点击查询
+TcnVendIF.getInstance().reqQueryParameters(UIComBack.getInstance().getGroupHefanZpId(strParam),UIComBack.getInstance().getQueryParameters(strParamSecond));
+接口说明
+参数名称	参数说明
+grpId	柜组号
+Address	参数地址
+
+14、设置参数。
+ 
+控件功能在com.tcn.sdk.springdemo.MainAct类里面，搜索menu_lift_set_param_select
+选择参数项、输入参数值、点击设置
+TcnVendIF.getInstance().reqSetParameters(Integer.valueOf(grp),UIComBack.getInstance().getQueryParameters(data1),data2);
+接口说明
+参数名称	参数说明
+grpId	柜组号
+Address	参数地址
+value	参数值
+
+
+
+
+
+SDK返回参数监听说明
+注册VendListener 进行监听
+主要参数说明：
+
+
+1、TcnVendEventID.COMMAND_QUERY_PARAMETERS查询货道故障
+通过查询接口TcnVendIF.getInstance().reqQueryParameters(UIComBack.getInstance().getGroupHefanZpId(strParam),UIComBack.getInstance().getQueryParameters(strParamSecond));
+1、
+2、在com.tcn.sdk.springdemo.MainAct目录的TcnVendEventID.COMMAND_QUERY_PARAMETERS接收这返回故障
+返回值	参数说明
+cEventInfo.m_lParam2	返回要查询的参数的值
+2、TcnVendEventID.CMD_QUERY_STATUS_LIFTER：返回机器状态
+1、点击自检查询按钮调用出货接口;
+2、在com.tcn.sdk.springdemo.MainAct目录的TcnVendEventID.CMD_QUERY_STATUS_LIFTER接收这返回状态
+返回值	参数说明
+cEventInfo.m_lParam1	 TcnVendEventResultID.STATUS_WAIT_TAKE_GOODS：
+检测到取货口有货,提示客户取走商品
+ TcnVendEventResultID.STATUS_FREE：
+机器空闲状态（没有在运行） TcnVendEventResultID.STATUS_HEATING_START：
+开始加热 
+TcnVendEventResultID.STATUS_HEATING：加热中 TcnVendEventResultID.STATUS_HEATING_END：加热完成 TcnVendEventResultID.CMD_NO_DATA_RECIVE：其他
+
+3、TcnVendEventID.CMD_TAKE_GOODS_DOOR：取货门开关
+1、点击取货门开关按钮
+TcnVendIF.getInstance().reqReset(UIComBack.getInstance().getGroupSpringId(strParam))复位接口
+2、在com.tcn.sdk.springdemo.MainAct目录TcnVendEventID.CMD_TAKE_GOODS_DOOR接收返回状态
+返回值	参数说明
+cEventInfo.m_lParam3	开关动作：
+TcnVendEventResultID.DO_OPEN 开门
+TcnVendEventResultID.DO_CLOSE 关门
+cEventInfo.m_lParam1	动作状态：
+TcnVendEventResultID.DO_START 动作开始
+TcnVendEventResultID.DO_END 动作结束
+TcnVendEventResultID.CMD_NO_DATA_RECIVE  其他
+cEventInfo.m_lParam4	动作描述
+
+4、TcnVendEventID.COMMAND_SELECT_GOODS	//选货成功
+1选择商品调用TcnVendIF.getInstance().reqSelectSlotNo(Integer.valueOf(strParam));选货接口（strParam：代表货道号。）
+2、在com.tcn.sdk.springdemo.MainAct里面的TcnVendEventID.COMMAND_SELECT_GOODS接收这个选货成功方法。
+
+5、TcnVendEventID.COMMAND_INVALID_SLOTNO	//无效货道
+1、选择商品调用TcnVendIF.getInstance().reqSelectSlotNo(Integer.valueOf(strParam));选货接口（strParam：代表货道号。）
+2、在com.tcn.sdk.springdemo.MainAct里面的TcnVendEventID.COMMAND_INVALID_SLOTNO接收这个无效货道方法。
+
+6、TcnVendEventID.CMD_LIFTER_UP：取货小车上升
+
+返回值	参数说明
+cEventInfo.m_lParam1	动作状态：
+TcnVendEventResultID.DO_START 动作开始
+TcnVendEventResultID.DO_END 动作结束
+TcnVendEventResultID.CMD_NO_DATA_RECIVE  其他
+
+1、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+2、如果货道为空在com.tcn.sdk.springdemo.MainAct里面的COMMAND_SOLE_OUT接收这个方法。
+
+7、TcnVendEventID.CMD_CLAPBOARD_SWITCH：微波炉加热
+1、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+2、如果货道有故障com.tcn.sdk.springdemo.MainAct里面的COMMAND_FAULT_SLOTNO接收返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam1	动作状态：
+TcnVendEventResultID.DO_START 动作开始
+TcnVendEventResultID.DO_END 动作结束
+TcnVendEventResultID.CMD_NO_DATA_RECIVE  其他
+cEventInfo.m_lParam3	开关动作：
+TcnVendEventResultID.DO_OPEN 打开
+TcnVendEventResultID.DO_CLOSE 关闭
+
+8、TcnVendEventID.CMD_CLEAN_FAULTS：清除故障
+2、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+3、如果货道有故障com.tcn.sdk.springdemo.MainAct里面的COMMAND_FAULT_SLOTNO接收返回
+
+
+9、TcnVendEventID.CMD_QUERY_PARAMETERS：查询参数
+4、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+2、如果货道有故障com.tcn.sdk.springdemo.MainAct里面的COMMAND_FAULT_SLOTNO接收返回
+
+10、TcnVendEventID.CMD_SET_PARAMETERS：设置参数
+
+
+11、TcnVendEventID.CMD_SET_LIGHT_OUT_STEP：升降机高出光检步数
+
+
+12、TcnVendEventID.COMMAND_SHIPPING：正在出货
+
+1、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+2、在com.tcn.sdk.springdemo.MainAct里面的COMMAND_SHIPPING接收正在出货返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam1	货道号
+cEventInfo.m_lParam4	“正在出货”文字提示
+
+13、TcnVendEventID.COMMAND_SHIPMENT_SUCCESS:出货成功
+1、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+2、在com.tcn.sdk.springdemo.MainAct里面的COMMAND_SHIPMENT_SUCCESS	接收正在出货返回结果。
+14、TcnVendEventID.COMMAND_SHIPMENT_FAILURE	:出货失败
+1、通过测试货道TcnVendIF.getInstance().reqShipTest(Integer.parseInt(strParam))接口测试出货。
+2、在com.tcn.sdk.springdemo.MainAct里面的COMMAND_SHIPMENT_FAILURE	接收正在出货返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam1	1  ：门开
+cEventInfo.m_lParam1	2  ：门关
+
+15、TcnVendEventID.MDB_RECIVE_PAPER_MONEY：投纸币
+1、在com.tcn.sdk.springdemo.MainAct里面的MDB_RECIVE_PAPER_MONEY接收纸币余额。
+返回值	参数说明
+cEventInfo.m_lParam4	投入的金额
+
+16、TcnVendEventID.MDB_RECIVE_COIN_MONEY：投硬币
+1、在com.tcn.sdk.springdemo.MainAct里面的MDB_RECIVE_COIN_MONEY接收硬币余额。
+返回值	参数说明
+cEventInfo.m_lParam4	投入的金额
+
+17、TcnVendEventID.MDB_BALANCE_CHANGE	//余额变化
+1、余额的变化有很多种，比如投纸币和硬币，每次投入后会在com.tcn.sdk.springdemo.MainAct里面的MDB_BALANCE_CHANGE方法接收，通过。TcnVendIF.getInstance().getBalance()获取余额
+
+
+18、TcnVendEventID.MDB_PAYOUT_PAPERMONEY：找纸币
+1、购买完成之后通过点击退币在TcnVendIF.getInstance().reqSelectCancel()方法，
+2、在com.tcn.sdk.springdemo.MainAct里面的MDB_PAYOUT_PAPERMONEY方法接收返回结果。
+返回值	参数说明
+cEventInfo.m_lParam1	-1   正在退币
+cEventInfo.m_lParam1	0
+cEventInfo.m_lParam4	退币状态+金额显示
+
+19、TcnVendEventID.MDB_PAYOUT_COINMONEY:找硬币
+1、购买完成之后通过点击退币在TcnVendIF.getInstance().reqSelectCancel()方法
+2、在com.tcn.sdk.springdemo.MainAct里面的MDB_PAYOUT_COINMONEY方法接收返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam1	-1   正在退币
+cEventInfo.m_lParam1	0
+cEventInfo.m_lParam4	退币状态+金额显示
+
+20、TcnVendEventID.MDB_SHORT_CHANGE_PAPER：纸币不足
+1、点击退币在TcnVendIF.getInstance().reqSelectCancel()方法，如果检测到机器纸币不足
+2、在com.tcn.sdk.springdemo.MainAct里面的MDB_SHORT_CHANGE_PAPER方法接收返回结果。
+返回值	参数说明
+cEventInfo.m_lParam4	纸币不足
+
+21、TcnVendEventID.MDB_SHORT_CHANGE_COIN:硬币不足
+1、点击退币在TcnVendIF.getInstance().reqSelectCancel()方法，如果检测到机器硬币不足。
+2、在com.tcn.sdk.springdemo.MainAct里面的MDB_SHORT_CHANGE_COIN方法接收返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam4	硬币不足
+
+22、TcnVendEventID.MDB_SHORT_CHANGE:零钱不足
+1、点击退币在TcnVendIF.getInstance().reqSelectCancel()方法，如果检测到机器领钱不足
+2、在com.tcn.sdk.springdemo.MainAct里面的MDB_SHORT_CHANGE方法接收返回结果。
+返回值	参数说明
+cEventInfo.m_lParam4	零钱不足
+
+23、TcnVendEventID.CMD_CARD_PAY_FINISH：刷卡扣费
+1、刷卡时上报消费金额TcnVendIF.getInstance().upLoadMoneyToCard(soltNo,price,tradeNo);
+2、在com.tcn.sdk.springdemo.MainAct里面的CMD_CARD_PAY_FINISH方法接收返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam1	0 表示刷卡扣费成功   否则刷卡失败
+cEventInfo.m_lParam2	货道号
+	
+
+24、TcnVendEventID.CMD_CASH_PAYOUT_NORSP_CONTIN：继续购买还是退币
+1、刷消费完成之后在com.tcn.springboard.vend.VendControl的CMD_CASH_PAYOUT_NORSP_CONTIN里面把结果返回。
+
+返回值	参数说明
+cEventInfo.m_lParam4	是否继续购买提示
+
+25、TcnVendEventID.CMD_STOPING_CARD_PAY：停止刷卡
+1、在com.tcn.sdk.springdemo.MainAct里面的CMD_STOPING_CARD_PAY方法接收返回结果。
+
+返回值	参数说明
+cEventInfo.m_lParam4	停止刷卡提示
+
+
+
